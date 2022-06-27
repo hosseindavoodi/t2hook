@@ -9,24 +9,42 @@ import './../App.css'
 
 export default function App() {
   const [posts, setPosts] = useState([]);
-  
+  const [loading, setLoading] = useState(true);
+
   const fetchPost = async () => {
+    try {
   const response = await fetch(
       "http://localhost:3000/posts"
     );
-   const data = await response.json();
-    setPosts(data);
-    console.log(data)
+    if (response.status === 200) {
+      const data = await response.json();
+      setPosts(data);
+      console.log(data)
+    }
+    else {
+      console.log("something is wrong")
+    }
+    setLoading(false)
+  }
+  catch (error) {
+    throw error
+  }
   };
 
   useEffect(() => {
     fetchPost();
   }, []);
+
   return (
     <div className="App">
+      {
+      loading ? 
+      <p>data is loading</p>
+      :
+      <>
       <div style={{height: "40px"}}>
          <Users btnname={'add new user'} />
-         </div>
+      </div>
     {posts.map(item => (
           <div key={item.id}>
           <span>id: {item.id}</span>
@@ -51,7 +69,8 @@ export default function App() {
           <br/>
           </div>
         ))}
-     
+        </>
+      }
     </div>
   );
 }
